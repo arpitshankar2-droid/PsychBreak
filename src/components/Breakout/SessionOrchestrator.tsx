@@ -12,6 +12,7 @@ import TwoTruths from "../MiniGames/TwoTruths";
 import EmotionTranslator from "../MiniGames/EmotionTranslator";
 import GratitudeVolley from "../MiniGames/GratitudeVolley";
 import BlindArchitect from "../MiniGames/BlindArchitect";
+import SynchronizationSwitch from "../MiniGames/SynchronizationSwitch";
 
 export default function SessionOrchestrator({ sessionId, initialRole }: { sessionId: string, initialRole: "userA" | "userB" }) {
   const [session, setSession] = useState<any>(null);
@@ -75,6 +76,7 @@ export default function SessionOrchestrator({ sessionId, initialRole }: { sessio
       if (session.selectedGame === "emotion_translator") return <EmotionTranslator sessionId={sessionId} session={session} role={initialRole} />;
       if (session.selectedGame === "gratitude_volley") return <GratitudeVolley sessionId={sessionId} session={session} role={initialRole} />;
       if (session.selectedGame === "blind_architect") return <BlindArchitect sessionId={sessionId} session={session} role={initialRole} />;
+      if (session.selectedGame === "sync_switch") return <SynchronizationSwitch sessionId={sessionId} session={session} role={initialRole} />;
       return <div>Game Error</div>;
     case "reflect":
       return <DebriefPrompt sessionId={sessionId} session={session} role={initialRole} />;

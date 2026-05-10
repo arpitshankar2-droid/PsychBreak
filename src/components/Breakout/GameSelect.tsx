@@ -4,6 +4,7 @@ import {
   mergeEmotionTranslator,
   mergeGratitudeVolley,
   mergeSharedFuture,
+  mergeSyncSwitch,
   updateGameData,
   updateSelectedGame,
 } from "@/lib/firebaseUtils";
@@ -11,6 +12,7 @@ import { createInitialBlindArchitectState } from "@/lib/blindArchitectState";
 import { createInitialSharedFutureState } from "@/lib/sharedFutureState";
 import { createInitialGratitudeVolleyState } from "@/lib/gratitudeVolleyState";
 import { createInitialEmotionTranslatorState } from "@/lib/emotionTranslatorState";
+import { createInitialSyncSwitchState } from "@/lib/syncSwitchState";
 
 export default function GameSelect({ sessionId, role }: { sessionId: string, role: string }) {
   const selectGame = async (gameId: string) => {
@@ -27,6 +29,9 @@ export default function GameSelect({ sessionId, role }: { sessionId: string, rol
     }
     if (gameId === "emotion_translator") {
       await mergeEmotionTranslator(sessionId, createInitialEmotionTranslatorState() as unknown as Record<string, unknown>);
+    }
+    if (gameId === "sync_switch") {
+      await mergeSyncSwitch(sessionId, createInitialSyncSwitchState() as unknown as Record<string, unknown>);
     }
     await updateSelectedGame(sessionId, gameId);
     await advanceStage(sessionId, "playing");
@@ -82,6 +87,17 @@ export default function GameSelect({ sessionId, role }: { sessionId: string, rol
             <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">Blind Architect</h3>
             <p className="text-muted-foreground text-base leading-relaxed">
               One of you describes a shape blueprint with positions only; the other draws from your words — then compare.
+            </p>
+          </button>
+
+          <button
+            onClick={() => selectGame("sync_switch")}
+            className="p-8 bg-white rounded-[2rem] shadow-sm border border-primary/10 hover:border-primary hover:shadow-xl transition-all text-left space-y-4 group relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-2 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
+            <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">The Synchronization Switch</h3>
+            <p className="text-muted-foreground text-base leading-relaxed">
+              Tap the same answer as your partner at the same moment — build a five-match streak together.
             </p>
           </button>
         </div>

@@ -100,6 +100,12 @@ export default function MoodCheckIn({ sessionId, session, role }: { sessionId: s
           </div>
         )}
 
+        {session.selectedGame === "sync_switch" && myMood >= 4 && partnerMood >= 4 && (
+          <div className="max-w-lg mx-auto rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 text-center text-sm text-foreground">
+            <p className="font-medium">You're ready. Take that energy back into the conversation.</p>
+          </div>
+        )}
+
         <div className="pt-8 flex flex-col gap-4 max-w-md mx-auto">
           {readyToReturn ? (
             <button 

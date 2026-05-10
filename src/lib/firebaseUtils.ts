@@ -262,6 +262,57 @@ export const mergeEmotionTranslator = async (sessionId: string, patch: Record<st
   });
 };
 
+/** Deep-merge `gameData.syncSwitch` (picks / acks / private answers per-field). */
+export const mergeSyncSwitch = async (sessionId: string, patch: Record<string, unknown>) => {
+  const ref = sessionRef(sessionId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
+  const prev = (snap.data().gameData || {}) as Record<string, unknown>;
+  const prevSs = (prev.syncSwitch || {}) as Record<string, unknown>;
+  const prevPicks = (prevSs.picks || {}) as Record<string, unknown>;
+  const prevIntro = (prevSs.introReady || {}) as Record<string, unknown>;
+  const prevBreath = (prevSs.breathingAck || {}) as Record<string, unknown>;
+  const prevPriv = (prevSs.privateAnswers || {}) as Record<string, unknown>;
+
+  const nextSs: Record<string, unknown> = { ...prevSs, ...patch };
+
+  if (patch.picks != null && typeof patch.picks === "object") {
+    const p = patch.picks as Record<string, unknown>;
+    nextSs.picks = {
+      userA: p.userA !== undefined ? p.userA : prevPicks.userA,
+      userB: p.userB !== undefined ? p.userB : prevPicks.userB,
+    };
+  }
+  if (patch.introReady != null && typeof patch.introReady === "object") {
+    const p = patch.introReady as Record<string, unknown>;
+    nextSs.introReady = {
+      userA: p.userA !== undefined ? p.userA : prevIntro.userA,
+      userB: p.userB !== undefined ? p.userB : prevIntro.userB,
+    };
+  }
+  if (patch.breathingAck != null && typeof patch.breathingAck === "object") {
+    const p = patch.breathingAck as Record<string, unknown>;
+    nextSs.breathingAck = {
+      userA: p.userA !== undefined ? p.userA : prevBreath.userA,
+      userB: p.userB !== undefined ? p.userB : prevBreath.userB,
+    };
+  }
+  if (patch.privateAnswers != null && typeof patch.privateAnswers === "object") {
+    const p = patch.privateAnswers as Record<string, unknown>;
+    nextSs.privateAnswers = {
+      userA: p.userA !== undefined ? p.userA : prevPriv.userA,
+      userB: p.userB !== undefined ? p.userB : prevPriv.userB,
+    };
+  }
+
+  await updateDoc(ref, {
+    gameData: {
+      ...prev,
+      syncSwitch: stripUndefinedDeep(nextSs) as Record<string, unknown>,
+    },
+  });
+};
+
 /** Deep-merge `gameData.gratitudeVolley` for Gratitude Volley v2. */
 export const mergeGratitudeVolley = async (sessionId: string, patch: Record<string, unknown>) => {
   const ref = sessionRef(sessionId);
