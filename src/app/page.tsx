@@ -25,8 +25,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!firebaseLooksConfigured()) {
+      const local =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
       setConfigHint(
-        "Firebase is not configured for this deployment. In Render, add all NEXT_PUBLIC_FIREBASE_* variables from your Firebase project, then redeploy so the build picks them up."
+        local
+          ? "Add all NEXT_PUBLIC_FIREBASE_* lines to .env.local (see .env.example), then stop and run npm run dev again."
+          : "Firebase is not configured for this deployment. In Render, add all NEXT_PUBLIC_FIREBASE_* variables, then redeploy so the build picks them up."
       );
     }
   }, []);

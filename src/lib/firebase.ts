@@ -15,7 +15,12 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+/** Only use the local emulator when explicitly enabled (otherwise dev hits cloud Firestore). */
+const useFirestoreEmulator =
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR === "true";
+
+if (typeof window !== "undefined" && useFirestoreEmulator) {
   try {
     connectFirestoreEmulator(db, "127.0.0.1", 8080);
   } catch {
