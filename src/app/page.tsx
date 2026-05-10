@@ -3,33 +3,82 @@ import { useState, useEffect } from "react";
 import { createSession, joinSession } from "@/lib/firebaseUtils";
 import { useRouter } from "next/navigation";
 
+function firebaseLooksConfigured() {
+  const pid = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  return Boolean(pid && pid !== "demo-project");
+}
+
 export default function Home() {
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
-  const [error, setError] = useState("");
+  const [createError, setCreateError] = useState("");
+  const [joinError, setJoinError] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [configHint, setConfigHint] = useState("");
 
   useEffect(() => {
     document.body.className = "theme-amber";
-    return () => { document.body.className = ""; }
+    return () => {
+      document.body.className = "";
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!firebaseLooksConfigured()) {
+      setConfigHint(
+        "Firebase is not configured for this deployment. In Render, add all NEXT_PUBLIC_FIREBASE_* variables from your Firebase project, then redeploy so the build picks them up."
+      );
+    }
   }, []);
 
   const handleCreate = async () => {
-    const id = await createSession();
-    router.push(`/session/${id}?role=userA`);
+    setCreateError("");
+    setJoinError("");
+    if (!firebaseLooksConfigured()) {
+      setCreateError(
+        "Cannot create a session: set NEXT_PUBLIC_FIREBASE_* on Render and redeploy (Next.js bakes these in at build time)."
+      );
+      return;
+    }
+    setCreating(true);
+    try {
+      const id = await createSession();
+      router.push(`/session/${id}?role=userA`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      setCreateError(
+        `Could not start a session (${msg}). Check the browser console, Firestore rules, and that your Render build had Firebase env vars set.`
+      );
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setJoinError("");
+    setCreateError("");
     if (!joinCode.trim()) return;
-    
+
+    if (!firebaseLooksConfigured()) {
+      setJoinError(
+        "Firebase is not configured on this host. Set NEXT_PUBLIC_FIREBASE_* on Render and redeploy."
+      );
+      return;
+    }
+
     const code = joinCode.toUpperCase();
-    const success = await joinSession(code);
-    
-    if (success) {
-      router.push(`/session/${code}?role=userB`);
-    } else {
-      setError("Session not found. Check your code.");
+    try {
+      const success = await joinSession(code);
+
+      if (success) {
+        router.push(`/session/${code}?role=userB`);
+      } else {
+        setJoinError("Session not found. Check your code.");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setJoinError(`Could not join (${msg}). Check Firebase config and network.`);
     }
   };
 
@@ -41,13 +90,21 @@ export default function Home() {
       <div className="w-full max-w-md space-y-16 z-10">
         
         <div className="space-y-6">
-          <button 
+          {configHint ? (
+            <p className="text-left text-sm text-amber-900 bg-amber-100 border border-amber-200 rounded-2xl px-4 py-3 leading-snug">
+              {configHint}
+            </p>
+          ) : null}
+          <button
+            type="button"
             onClick={handleCreate}
-            className="w-full py-10 bg-primary text-white rounded-[2rem] text-3xl font-bold shadow-2xl hover:bg-primary/90 transition-transform hover:scale-[1.02] active:scale-[0.98] border border-white/20"
+            disabled={creating}
+            className="w-full py-10 bg-primary text-white rounded-[2rem] text-3xl font-bold shadow-2xl hover:bg-primary/90 transition-transform hover:scale-[1.02] active:scale-[0.98] border border-white/20 disabled:opacity-60 disabled:pointer-events-none"
           >
-            Breakout Time
+            {creating ? "Starting…" : "Breakout Time"}
           </button>
           <p className="text-accent-foreground/80 font-medium text-lg">Tap when you need a circuit breaker.</p>
+          {createError ? <p className="text-red-600 font-medium text-sm leading-snug">{createError}</p> : null}
         </div>
 
         <div className="pt-8 border-t-2 border-primary/10">
@@ -66,7 +123,7 @@ export default function Home() {
                 Join
               </button>
             </div>
-            {error && <p className="text-red-600 font-medium">{error}</p>}
+            {joinError ? <p className="text-red-600 font-medium text-sm">{joinError}</p> : null}
           </form>
         </div>
 
