@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PsychBreak — Product Requirements Document</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F3;
+    --warm-white: #FFFEF9;
+    --ink: #1C1917;
+    --ink-light: #44403C;
+    --ink-muted: #78716C;
+    --accent: #C45E3E;
+    --accent-light: #F5E8E3;
+    --accent-mid: #E89070;
+    --teal: #2D7E6E;
+    --teal-light: #E0F0EC;
+    --gold: #B87D2E;
+    --gold-light: #FDF3E0;
+    --border: #E8E4DC;
+    --section-gap: 72px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* Cover */
+  .cover {
+    background: var(--ink);
+    color: var(--warm-white);
+    padding: 80px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.12;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 40%;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: var(--teal);
+    opacity: 0.10;
+  }
+
+  .cover-tag {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-mid);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: #FAF8F3;
+  }
+
+  .cover h1 span {
+    color: var(--accent-mid);
+  }
+
+  .cover-sub {
+    font-size: 18px;
+    color: #A8A29E;
+    font-weight: 300;
+    max-width: 520px;
+    margin-bottom: 48px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #78716C;
+  }
+
+  .meta-value {
+    font-size: 14px;
+    color: #E7E5E4;
+    font-weight: 500;
+  }
+
+  /* Page layout */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 48px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: var(--section-gap);
+    page-break-inside: avoid;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 12px;
+    margin-top: 32px;
+  }
+
+  p {
+    color: var(--ink-light);
+    margin-bottom: 16px;
+    max-width: 720px;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* Highlight box */
+  .highlight {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+  }
+
+  .highlight p {
+    color: var(--ink-light);
+    margin: 0;
+  }
+
+  .highlight-teal {
+    background: var(--teal-light);
+    border-left: 3px solid var(--teal);
+  }
+
+  .highlight-gold {
+    background: var(--gold-light);
+    border-left: 3px solid var(--gold);
+  }
+
+  /* Cards grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .card h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  /* Flow steps */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 24px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    position: relative;
+    padding-bottom: 28px;
+  }
+
+  .flow-step:last-child { padding-bottom: 0; }
+
+  .flow-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 44px;
+    width: 2px;
+    bottom: 0;
+    background: var(--border);
+  }
+
+  .flow-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--warm-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .flow-content h4 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+    padding-top: 9px;
+  }
+
+  .flow-content p {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  /* Game section */
+  .game-block {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 24px 0;
+  }
+
+  .game-block + .game-block {
+    margin-top: 20px;
+  }
+
+  .game-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .tag-accent { background: var(--accent-light); color: var(--accent); }
+  .tag-teal { background: var(--teal-light); color: var(--teal); }
+  .tag-gold { background: var(--gold-light); color: var(--gold); }
+
+  .game-block h3 {
+    margin-top: 0;
+    font-size: 19px;
+  }
+
+  .game-block p {
+    max-width: 100%;
+  }
+
+  .how-to {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 16px 0;
+  }
+
+  .how-to-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .how-to p {
+    font-size: 13.5px;
+    color: var(--ink-light);
+    margin: 0;
+  }
+
+  .why-it-works {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 14px;
+  }
+
+  .why-label {
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--teal);
+    white-space: nowrap;
+    padding-top: 2px;
+    min-width: 88px;
+  }
+
+  .why-text {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  /* Feature table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  thead tr {
+    background: var(--ink);
+    color: var(--warm-white);
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  thead th:first-child { border-radius: 8px 0 0 0; }
+  thead th:last-child { border-radius: 0 8px 0 0; }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--warm-white); }
+
+  tbody td {
+    padding: 12px 16px;
+    color: var(--ink-light);
+    vertical-align: top;
+  }
+
+  tbody td:first-child { font-weight: 500; color: var(--ink); }
+
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .pill-p1 { background: var(--accent-light); color: var(--accent); }
+  .pill-p2 { background: var(--gold-light); color: var(--gold); }
+  .pill-p3 { background: var(--teal-light); color: var(--teal); }
+
+  /* Timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: 24px 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .phase {
+    padding: 24px;
+    border-right: 1px solid var(--border);
+  }
+
+  .phase:last-child { border-right: none; }
+
+  .phase-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .phase-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .phase ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .phase ul li {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 4px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .phase ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--border);
+  }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .kpi {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--ink);
+    color: #78716C;
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  .footer span { color: var(--accent-mid); }
+
+  @media print {
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-tag">Product Requirements Document · v1.0</div>
+  <h1>Psych<span>Break</span></h1>
+  <p class="cover-sub">A mobile application that transforms relationship conflict into a moment of play, calm, and reconnection — powered by psychoanalytic principles.</p>
+  <div class="cover-meta">
+    <div class="meta-item">
+      <span class="meta-label">Prepared for</span>
+      <span class="meta-value">Antigravit Development Team</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Version</span>
+      <span class="meta-value">1.0 — Initial PRD</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Status</span>
+      <span class="meta-value">Ready for Development Review</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Platform</span>
+      <span class="meta-value">iOS & Android (React Native)</span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- 1. EXECUTIVE SUMMARY -->
+  <div class="section">
+    <div class="section-label">01 — Overview</div>
+    <h2>What is PsychBreak?</h2>
+    <p>PsychBreak is a mobile companion app for couples and close relationships. When a conversation escalates into anger or frustration, either person can tap the <strong>"Breakout"</strong> button. The app immediately launches a short, structured mini-game designed to lower cortisol, shift emotional states, and bring both people back to a calm and curious headspace — before the real conversation continues.</p>
+
+    <div class="highlight">
+      <p><strong>Core insight:</strong> Most arguments aren't about the argument. They are about two people in flooded emotional states who have lost access to their prefrontal cortex. Forcing a pause is not enough. The pause needs to do something. PsychBreak gives that pause a job.</p>
+    </div>
+
+    <p>The app is rooted in established psychology: emotional flooding theory (John Gottman), co-regulation, future-pacing, and active listening research. The games are not distractions — they are therapeutic tools wrapped in accessible, low-stakes formats.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 2. PROBLEM STATEMENT -->
+  <div class="section">
+    <div class="section-label">02 — Problem Statement</div>
+    <h2>Why This App Needs to Exist</h2>
+    <p>When two people argue, the brain shifts into a defensive, threat-response mode. Physiologically, heart rate rises above 100 bpm, and rational thought becomes functionally impaired. Most couples in this state do one of three things: escalate further, go cold and silent, or walk away unresolved.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🔥</div>
+        <h4>Escalation</h4>
+        <p>Raised voices and defensiveness. The original issue is buried under the heat of the moment.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧊</div>
+        <h4>Stonewalling</h4>
+        <p>One or both parties shut down. Nothing gets resolved. Resentment accumulates.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚪</div>
+        <h4>Avoidance</h4>
+        <p>The conversation is abandoned. The same fight happens again a week later.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">😶</div>
+        <h4>Toxic repair</h4>
+        <p>One person apologises just to end the fight, without genuine understanding or change.</p>
+      </div>
+    </div>
+
+    <p>There is no widely available, accessible tool that intervenes at this precise moment — the moment of peak emotional flooding — and actively helps two people de-escalate together, rather than apart.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 3. TARGET USERS -->
+  <div class="section">
+    <div class="section-label">03 — Target Audience</div>
+    <h2>Who Uses PsychBreak?</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">💑</div>
+        <h4>Romantic partners</h4>
+        <p>Couples in long-term relationships who want healthier conflict patterns. Primary audience.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">👨‍👩‍👧</div>
+        <h4>Families</h4>
+        <p>Parents and adult children navigating difficult conversations. Secondary use case.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤝</div>
+        <h4>Close friends</h4>
+        <p>Best friends and flatmates who want tools for resolving tension without damaging the friendship.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏢</div>
+        <h4>Therapy clients</h4>
+        <p>Couples in therapy using PsychBreak as a between-session behavioural tool. Therapist-recommended.</p>
+      </div>
+    </div>
+
+    <div class="highlight highlight-teal">
+      <p><strong>Design principle:</strong> The app must feel non-clinical and approachable. It should feel closer to a fun game app than a therapy tool, even though it IS a therapy tool. Stigma is a real barrier to adoption.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 4. CORE USER FLOW -->
+  <div class="section">
+    <div class="section-label">04 — Core User Flow</div>
+    <h2>The Breakout Journey</h2>
+    <p>The entire core experience must be reachable in under 3 taps from the home screen. Speed matters: when someone is angry, they will not navigate a complex UI.</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <h4>Trigger — The Breakout Button</h4>
+          <p>Either party taps a large, prominent "Breakout Time" button on the home screen. No account required at this step. The button is the entire first screen. Big. Unmissable. One tap.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <h4>Invitation — Invite Your Partner</h4>
+          <p>The app generates a unique session code or a shareable deep-link. The triggering user shares this with their partner via any messaging app. The partner taps the link and joins the same game session instantly. Both parties must be in the same session for the game to begin.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <h4>Breath — Mandatory Cool-Down Timer</h4>
+          <p>Before the game starts, both users see a 60-second guided breathing animation. This is non-skippable. The science is clear: you cannot access rational thought until your heart rate drops below 100 bpm. This step is the most important one in the app, even if it feels simple.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <h4>Game — Play the Mini-Game</h4>
+          <p>The app either selects a game randomly or lets users choose from the available options. Each game lasts 5–10 minutes. Both participants play simultaneously on their respective devices, coordinated in real-time via a lightweight backend.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <h4>Reflect — Post-Game Debrief Prompt</h4>
+          <p>After the game, the app displays a single, gentle conversation prompt designed to ease the parties back into dialogue. Examples: "What surprised you about how your partner described something?" or "What future goal of theirs did you not know about?" There is no AI counselling here — just a question and space.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-content">
+          <h4>Return — Back to the Conversation</h4>
+          <p>Both users optionally rate their current emotional state on a simple 1–5 scale (emoji-based, low cognitive load). If both are above 3/5, the app offers to guide them back to the original topic using a structured "I feel / I need / I ask" communication framework. If either is still below 3, the app suggests another game round or a longer break.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 5. THE GAMES -->
+  <div class="section">
+    <div class="section-label">05 — The Games Library</div>
+    <h2>Therapeutic Mini-Games</h2>
+    <p>Each game in PsychBreak is chosen for a specific psychological function. They are not filler — each one targets a specific emotional or communicative mechanism that breaks down during conflict. Below are the four games for the v1 launch, including the two core games proposed in the brief.</p>
+
+    <!-- Game 1 -->
+    <div class="game-block">
+      <span class="game-tag tag-accent">Game 01 · Core</span>
+      <h3>The Blind Architect</h3>
+      <p>A communication and frustration-tolerance game used in corporate retreats and couples therapy alike. Deceptively simple; psychologically rich.</p>
+
+      <div class="how-to">
+        <div class="how-to-label">How to play</div>
+        <p>Both parties are placed back-to-back — represented on their respective phone screens. One person is given a randomly generated simple image (a house with a tree, a geometric shape, a simple animal outline). They must describe it to their partner using only shape names and spatial directions — no object names allowed. The partner draws it on a digital canvas on their phone. After 3 minutes, both screens are revealed side-by-side.</p>
+      </div>
+
+      <div class="why-it-works">
+        <span class="why-label">Why it works</span>
+        <p class="why-text">This game makes miscommunication visible in a safe, non-threatening context. It teaches patience, active listening, and concretely demonstrates how differently two people interpret the exact same instructions — even when both are trying their very best. The shared laugh at the wildly different drawings is itself therapeutic.</p>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <strong style="font-size: 13px; color: var(--ink);">Technical requirements:</strong>
+        <ul style="margin-top: 8px; padding-left: 20px; font-size: 13px; color: var(--ink-muted);">
+          <li>Real-time WebSocket connection between two players</li>
+          <li>Simple canvas drawing tool (finger draw on mobile)</li>
+          <li>Image library of 50+ simple line-drawings (SVG preferred)</li>
+          <li>Side-by-side reveal animation at end of round</li>
+          <li>"No object names" word filter is optional in v1 — enforced by honour system</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Game 2 -->
+    <div class="game-block">
+      <span class="game-tag tag-teal">Game 02 · Core</span>
+      <h3>Two Truths & a Dream</h3>
+      <p>A future-pacing exercise disguised as the classic party game. It shifts focus from the past (where all fights live) to the future (where both people still share a timeline).</p>
+
+      <div class="how-to">
+        <div class="how-to-label">How to play</div>
+        <p>Each person is given 2 minutes to write down three things they want to happen in the next five years. Two must be genuine desires they have not yet shared with their partner. One is completely made up. They submit their three statements, then take turns reading them aloud (via text displayed on screen). The other person guesses which one is the invented dream. Points are optional — connection is the goal.</p>
+      </div>
+
+      <div class="why-it-works">
+        <span class="why-label">Why it works</span>
+        <p class="why-text">This is applied future-pacing — a technique used in Neuro-Linguistic Programming and modern couples therapy. Arguments anchor people to the present moment or the past. By discussing future goals in a playful, low-stakes format, the game reminds both parties that they share a long-term timeline and opens up conversations about ambitions, fears, and desires that may have never surfaced otherwise.</p>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <strong style="font-size: 13px; color: var(--ink);">Technical requirements:</strong>
+        <ul style="margin-top: 8px; padding-left: 20px; font-size: 13px; color: var(--ink-muted);">
+          <li>Text input with 120-character limit per statement</li>
+          <li>Turn-based reveal logic (Player A reads, Player B guesses, then swap)</li>
+          <li>Timer for writing phase (2 minutes, optional)</li>
+          <li>Simple guess mechanic: tap the statement you think is the dream</li>
+          <li>Optional: save favourite responses to a "Dream Journal" in the app</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Game 3 -->
+    <div class="game-block">
+      <span class="game-tag tag-gold">Game 03 · Supplemental</span>
+      <h3>The Gratitude Volley</h3>
+      <p>A structured positive reframing exercise to counteract the negativity bias that dominates during conflict.</p>
+
+      <div class="how-to">
+        <div class="how-to-label">How to play</div>
+        <p>Players alternate typing one specific thing they are grateful for about the other person. The rule is specificity: "I love you" is not allowed. "I'm grateful that you make my coffee without being asked" is. They go back and forth for 8 rounds, building a real-time list on both screens simultaneously. At the end, the full list is shown to both players at once.</p>
+      </div>
+
+      <div class="why-it-works">
+        <span class="why-label">Why it works</span>
+        <p class="why-text">Gottman's research shows that healthy relationships maintain a 5:1 ratio of positive to negative interactions. This game directly builds that ratio in the immediate aftermath of a negative exchange. Specificity is mandatory because generic praise is processed as empty by the brain, while specific praise activates genuine emotional response and memory.</p>
+      </div>
+    </div>
+
+    <!-- Game 4 -->
+    <div class="game-block">
+      <span class="game-tag tag-gold">Game 04 · Supplemental</span>
+      <h3>The Emotion Translator</h3>
+      <p>A non-verbal, low-pressure emotion mapping game for moments when words feel too hard.</p>
+
+      <div class="how-to">
+        <div class="how-to-label">How to play</div>
+        <p>Each player is shown a grid of 20 emotion words (e.g. "overlooked," "anxious," "proud," "exhausted"). They must privately select the 5 that best describe how they feel right now — not about the argument, but in general. Then both selections are revealed simultaneously. Players discuss: "Which of these surprised you? Which did you expect?"</p>
+      </div>
+
+      <div class="why-it-works">
+        <span class="why-label">Why it works</span>
+        <p class="why-text">Emotional granularity — the ability to name specific emotions — is one of the strongest predictors of emotional regulation and relationship health. Many people in conflict say "I'm angry" when they are actually feeling scared, humiliated, or exhausted. This game builds the vocabulary for more precise self-expression and shows each partner that the emotional landscape of the other person is often more complex and sympathetic than it appears mid-argument.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 6. SCREENS & UI REQUIREMENTS -->
+  <div class="section">
+    <div class="section-label">06 — Screen-by-Screen Spec</div>
+    <h2>Key Screens & UI Requirements</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Screen</th>
+          <th>Primary Purpose</th>
+          <th>Key UI Elements</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Home / Breakout</td>
+          <td>Trigger a session instantly</td>
+          <td>Single large CTA button, calm colour palette, no clutter</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Session Invite</td>
+          <td>Connect both users to same session</td>
+          <td>6-digit code display, share button, QR code option</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Breathing Room</td>
+          <td>Mandatory 60s physiological cool-down</td>
+          <td>Animated breathing circle, heart rate prompt, non-skippable</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Game Select</td>
+          <td>Choose or randomise a game</td>
+          <td>Game cards with brief descriptions, randomise button</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Blind Architect</td>
+          <td>Back-to-back drawing game</td>
+          <td>Drawing canvas, instruction area, timer, reveal screen</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Two Truths & a Dream</td>
+          <td>Future-pacing card game</td>
+          <td>Text input, reveal cards, guess interface</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Gratitude Volley</td>
+          <td>Positive reframing</td>
+          <td>Text exchange, growing list view, 8-round tracker</td>
+          <td><span class="pill pill-p2">P2 · Should</span></td>
+        </tr>
+        <tr>
+          <td>Emotion Translator</td>
+          <td>Emotion vocabulary game</td>
+          <td>Grid of emotion words, selection state, reveal overlay</td>
+          <td><span class="pill pill-p2">P2 · Should</span></td>
+        </tr>
+        <tr>
+          <td>Debrief Prompt</td>
+          <td>Ease back into dialogue</td>
+          <td>Single question card, space for notes, mood check-in</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Mood Check-In</td>
+          <td>Gauge readiness to resume</td>
+          <td>5-emoji scale, both scores shown, conditional next step</td>
+          <td><span class="pill pill-p1">P1 · Must</span></td>
+        </tr>
+        <tr>
+          <td>Session History</td>
+          <td>Track emotional patterns over time</td>
+          <td>Timeline of sessions, mood chart, saved dreams/gratitude</td>
+          <td><span class="pill pill-p3">P3 · Nice</span></td>
+        </tr>
+        <tr>
+          <td>Settings / Profile</td>
+          <td>Partner linking, preferences</td>
+          <td>Partner account link, notification prefs, game preferences</td>
+          <td><span class="pill pill-p2">P2 · Should</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 7. DESIGN PRINCIPLES -->
+  <div class="section">
+    <div class="section-label">07 — Design Principles</div>
+    <h2>How This App Must Feel</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🧘</div>
+        <h4>Calm by default</h4>
+        <p>No push notifications that feel urgent. No red badges. Soft animations. The app itself must model the emotional state it is trying to create.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h4>Frictionless under stress</h4>
+        <p>Maximum 3 taps to start a game session. Large touch targets. No modals requiring careful reading. People in conflict have zero patience for UI friction.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎮</div>
+        <h4>Playful, not clinical</h4>
+        <p>No therapy language on surface-level UI. No "emotional regulation" or "attachment styles" in the main flow. Fun first, science underneath.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤐</div>
+        <h4>Privacy first</h4>
+        <p>Sessions are ephemeral by default. Nothing is shared with third parties. Data stored on-device unless user explicitly opts into history sync.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌈</div>
+        <h4>Colour as emotion</h4>
+        <p>The UI transitions from warm, energetic tones when the Breakout is triggered → cooler, softer blues and greens as the session progresses toward calm.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📵</div>
+        <h4>No dark patterns</h4>
+        <p>No addictive loops. No streaks. No gamification that creates obligation. The app's goal is to be used less over time as patterns improve.</p>
+      </div>
+    </div>
+
+    <div class="highlight highlight-gold">
+      <p><strong>Colour system suggestion:</strong> Begin session in warm amber/coral tones (active, urgent). Transition through breathing screen to a soft warm white. Land in cool sage/teal for game screens. This chromatic journey mirrors the emotional journey the app is facilitating.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 8. TECHNICAL ARCHITECTURE -->
+  <div class="section">
+    <div class="section-label">08 — Technical Architecture</div>
+    <h2>What Needs to Be Built</h2>
+
+    <h3>Platform</h3>
+    <p>React Native (iOS + Android). Both partners need the app on their respective devices. A web companion (for tablets/desktop use as secondary device in a session) can be a v2 consideration.</p>
+
+    <h3>Backend Requirements</h3>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Purpose</th><th>Tech Suggestion</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Real-time session</td>
+          <td>Sync game state between two players' devices</td>
+          <td>WebSockets / Supabase Realtime / Firebase RTDB</td>
+        </tr>
+        <tr>
+          <td>Session codes</td>
+          <td>Generate unique 6-digit join codes</td>
+          <td>Simple server-side generation, Redis TTL</td>
+        </tr>
+        <tr>
+          <td>Drawing sync</td>
+          <td>Relay canvas strokes in Blind Architect game</td>
+          <td>WebSocket stroke events (delta, not full canvas)</td>
+        </tr>
+        <tr>
+          <td>Auth (optional v1)</td>
+          <td>Persistent partner link, history storage</td>
+          <td>Anonymous auth in v1, email/Google in v2</td>
+        </tr>
+        <tr>
+          <td>Session history</td>
+          <td>Store mood check-ins and saved content</td>
+          <td>Local SQLite in v1, Supabase Postgres in v2</td>
+        </tr>
+        <tr>
+          <td>Image library</td>
+          <td>SVG drawings for Blind Architect</td>
+          <td>Static CDN-hosted SVG files, bundled offline fallback</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Offline Considerations</h3>
+    <p>If both players are in the same room (the common case), a local P2P connection via Bluetooth or local WiFi should be the primary connection method. This removes latency, reduces costs, and works without internet. WebSocket cloud sync is the fallback for long-distance use cases.</p>
+
+    <div class="highlight">
+      <p><strong>Key constraint:</strong> The app must work reliably under poor network conditions. An argument is the worst possible time to encounter a loading spinner or connection error. Implement aggressive retry logic and a clear "waiting for partner" state that does not feel like a failure.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 9. SUCCESS METRICS -->
+  <div class="section">
+    <div class="section-label">09 — Success Metrics</div>
+    <h2>How We Know It's Working</h2>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-value">≥80%</div>
+        <div class="kpi-label">Sessions completed without dropout</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">+1.5</div>
+        <div class="kpi-label">Avg mood score improvement per session</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">≤45s</div>
+        <div class="kpi-label">Time from open to game start</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">≥60%</div>
+        <div class="kpi-label">D30 retention among coupled users</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">4.4+</div>
+        <div class="kpi-label">Target App Store rating at 6 months</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">≥2×</div>
+        <div class="kpi-label">Monthly sessions per couple (healthy engagement)</div>
+      </div>
+    </div>
+
+    <div class="highlight highlight-teal">
+      <p><strong>Important note on engagement:</strong> Unlike most apps, PsychBreak success means being opened less over time, not more — because the couple's conflict patterns are improving. Track whether mood scores and session frequency show improvement trends. High-frequency usage at low mood deltas is a warning signal, not a success metric.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 10. ROADMAP -->
+  <div class="section">
+    <div class="section-label">10 — Phased Roadmap</div>
+    <h2>Build in Three Phases</h2>
+
+    <div class="timeline">
+      <div class="phase">
+        <div class="phase-label" style="color: var(--accent);">Phase 1 · MVP</div>
+        <div class="phase-name">The Core Loop</div>
+        <ul>
+          <li>Breakout button</li>
+          <li>Session invite & join</li>
+          <li>Breathing timer</li>
+          <li>Blind Architect game</li>
+          <li>Two Truths & a Dream game</li>
+          <li>Debrief prompt</li>
+          <li>Mood check-in</li>
+          <li>Anonymous sessions only</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="phase-label" style="color: var(--gold);">Phase 2 · Depth</div>
+        <div class="phase-name">The Relationship Layer</div>
+        <ul>
+          <li>User accounts & partner linking</li>
+          <li>Gratitude Volley game</li>
+          <li>Emotion Translator game</li>
+          <li>Session history & mood chart</li>
+          <li>Dream Journal (saved responses)</li>
+          <li>Structured dialogue guide post-game</li>
+          <li>Therapist referral integration</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="phase-label" style="color: var(--teal);">Phase 3 · Growth</div>
+        <div class="phase-name">The Ecosystem</div>
+        <ul>
+          <li>Therapist dashboard view</li>
+          <li>Community game library</li>
+          <li>Multilingual support</li>
+          <li>Apple Watch quick trigger</li>
+          <li>Couples insights report (monthly)</li>
+          <li>Premium tier features</li>
+          <li>Expanded image library (AI-gen SVG)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 11. OPEN QUESTIONS -->
+  <div class="section">
+    <div class="section-label">11 — Open Questions</div>
+    <h2>Decisions Needed Before Build</h2>
+
+    <table>
+      <thead>
+        <tr><th>Question</th><th>Options</th><th>Recommendation</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Monetisation model</td>
+          <td>Free, Freemium, Subscription, One-time</td>
+          <td>Freemium — core loop free, history & extra games behind a low monthly fee (~$4.99)</td>
+        </tr>
+        <tr>
+          <td>Session connection method</td>
+          <td>Cloud WebSocket, Local P2P, Hybrid</td>
+          <td>Hybrid — local P2P first, cloud as fallback</td>
+        </tr>
+        <tr>
+          <td>Single vs. dual device</td>
+          <td>Must both have app, one can use web</td>
+          <td>Both must have native app in v1 for optimal experience</td>
+        </tr>
+        <tr>
+          <td>Clinical advisory</td>
+          <td>Build without advisor, partner with therapist</td>
+          <td>Engage one licensed couples therapist as advisor before launch</td>
+        </tr>
+        <tr>
+          <td>Crisis protocol</td>
+          <td>None, redirect to resources, in-app support</td>
+          <td>If mood check-in returns 1/5 for both, display crisis resources quietly</td>
+        </tr>
+        <tr>
+          <td>Analytics & data</td>
+          <td>Full analytics, anonymous aggregates, none</td>
+          <td>Anonymous aggregate only. No individual session data leaves the device in v1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong style="color: #A8A29E;">PsychBreak</strong> — Product Requirements Document v1.0<br>
+  Prepared for <span>Antigravit</span> · Confidential
+</div>
+
+</body>
+</html>
