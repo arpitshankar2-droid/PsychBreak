@@ -1,7 +1,11 @@
 rules_version = '2';
+// Deploy to your Firebase project: Firebase console → Firestore → Rules → Publish,
+// or: firebase deploy --only firestore:rules --project YOUR_PROJECT_ID
+// This app uses no Firebase Auth; sessions are identified only by the random room code.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+    match /sessions/{sessionId} {
       allow read, write: if true;
     }
   }
