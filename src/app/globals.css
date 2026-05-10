@@ -46,12 +46,29 @@
   --accent-foreground: #2d3748;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 2s ease-in-out, color 1s ease;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   @apply antialiased;
+}
+
+/* Avoid iOS zooming focused inputs; keeps desktop typography unchanged above sm */
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 1rem;
+  }
 }
 
 /* Utilities for 3D flip */
