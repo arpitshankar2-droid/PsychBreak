@@ -228,12 +228,12 @@ export const PROMPTS_FINAL: PromptDef[] = [
   FN("4", "Together", "Side by side", "Back to back"),
 ];
 
-/** Next round window from current streak (0 = baseline after miss). */
+/** Next round window from current streak (0 = baseline after miss). Longer windows reduce missed concurrent taps. */
 export function windowMsForStreak(streak: number): number {
-  if (streak >= 4) return 2000;
-  if (streak >= 3) return 1500;
-  if (streak >= 1) return 1800;
-  return 2000;
+  if (streak >= 4) return 3500;
+  if (streak >= 3) return 2800;
+  if (streak >= 1) return 3200;
+  return 3500;
 }
 
 export function categoryForNextRound(streak: number): PromptCategory {
@@ -376,7 +376,7 @@ export function createInitialSyncSwitchState(): SyncSwitchV2 {
     optionRight: "",
     swapOptionsUserA: false,
     swapOptionsUserB: false,
-    windowMs: 2000,
+    windowMs: 3500,
     roundStartedAt: 0,
     picks: { userA: null, userB: null },
     revealMatch: null,

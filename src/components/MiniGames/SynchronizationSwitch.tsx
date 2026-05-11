@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { mergeSyncSwitch, advanceStage, clearMoods } from "@/lib/firebaseUtils";
+import {
+  mergeSyncSwitch,
+  advanceStage,
+  clearMoods,
+  setSyncSwitchPick,
+  setSyncSwitchIntroReady,
+  setSyncSwitchBreathingAck,
+  setSyncSwitchPrivateAnswer,
+} from "@/lib/firebaseUtils";
 import {
   NUDGE_SHOW_MS,
   SILENT_MISS_ADVANCE_MS,
@@ -128,9 +136,11 @@ export default function SynchronizationSwitch({
     if (!ss || ss.phase !== "round_active") return;
     if (r === "userA" && ss.picks.userA) return;
     if (r === "userB" && ss.picks.userB) return;
-    await mergeSyncSwitch(sessionId, {
-      picks: r === "userA" ? { userA: side } : { userB: side },
-    });
+    try {
+      await setSyncSwitchPick(sessionId, r, side);
+    } catch (e) {
+      console.error("setSyncSwitchPick", e);
+    }
   };
 
   const resolveRound = useCallback(async () => {
@@ -321,17 +331,21 @@ export default function SynchronizationSwitch({
   const ackIntro = async () => {
     if (now < ss.introReadyAfter) return;
     setBusy(true);
-    await mergeSyncSwitch(sessionId, {
-      introReady: r === "userA" ? { userA: true } : { userB: true },
-    });
+    try {
+      await setSyncSwitchIntroReady(sessionId, r, true);
+    } catch (e) {
+      console.error("setSyncSwitchIntroReady", e);
+    }
     setBusy(false);
   };
 
   const ackBreathing = async () => {
     setBusy(true);
-    await mergeSyncSwitch(sessionId, {
-      breathingAck: r === "userA" ? { userA: true } : { userB: true },
-    });
+    try {
+      await setSyncSwitchBreathingAck(sessionId, r, true);
+    } catch (e) {
+      console.error("setSyncSwitchBreathingAck", e);
+    }
     setBusy(false);
   };
 
@@ -349,9 +363,11 @@ export default function SynchronizationSwitch({
   const submitPrivate = async (text: string) => {
     const t = text.trim();
     if (!t) return;
-    await mergeSyncSwitch(sessionId, {
-      privateAnswers: r === "userA" ? { userA: t } : { userB: t },
-    });
+    try {
+      await setSyncSwitchPrivateAnswer(sessionId, r, t);
+    } catch (e) {
+      console.error("setSyncSwitchPrivateAnswer", e);
+    }
   };
 
   const finishMood = async () => {

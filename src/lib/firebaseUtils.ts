@@ -262,6 +262,47 @@ export const mergeEmotionTranslator = async (sessionId: string, patch: Record<st
   });
 };
 
+/** Single-field writes under `gameData.syncSwitch` so two devices updating at once never clobber each other. */
+export const setSyncSwitchPick = async (
+  sessionId: string,
+  role: "userA" | "userB",
+  side: "left" | "right"
+) => {
+  await updateDoc(sessionRef(sessionId), {
+    [`gameData.syncSwitch.picks.${role}`]: side,
+  });
+};
+
+export const setSyncSwitchIntroReady = async (
+  sessionId: string,
+  role: "userA" | "userB",
+  ready: boolean
+) => {
+  await updateDoc(sessionRef(sessionId), {
+    [`gameData.syncSwitch.introReady.${role}`]: ready,
+  });
+};
+
+export const setSyncSwitchBreathingAck = async (
+  sessionId: string,
+  role: "userA" | "userB",
+  ack: boolean
+) => {
+  await updateDoc(sessionRef(sessionId), {
+    [`gameData.syncSwitch.breathingAck.${role}`]: ack,
+  });
+};
+
+export const setSyncSwitchPrivateAnswer = async (
+  sessionId: string,
+  role: "userA" | "userB",
+  text: string
+) => {
+  await updateDoc(sessionRef(sessionId), {
+    [`gameData.syncSwitch.privateAnswers.${role}`]: text,
+  });
+};
+
 /** Deep-merge `gameData.syncSwitch` (picks / acks / private answers per-field). */
 export const mergeSyncSwitch = async (sessionId: string, patch: Record<string, unknown>) => {
   const ref = sessionRef(sessionId);
