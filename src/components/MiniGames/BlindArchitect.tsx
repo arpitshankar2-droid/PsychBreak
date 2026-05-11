@@ -140,7 +140,6 @@ export default function BlindArchitect({
   const mySeat = seatFor(r, describerRole);
   const isDescriber = mySeat === "describer";
   const chatSubphase = ba.chatSubphase ?? "instruction";
-  const clarifyReceived = ba.clarifyReceivedThisCycle === true;
 
   /** Firestore-backed append — avoids stale `ba.messages` wiping the thread. */
   const pushMessages = async (msgs: BAChatMsg[], patch: Record<string, unknown> = {}) => {
@@ -411,13 +410,7 @@ export default function BlindArchitect({
     }
 
     if (kind === "instruction") {
-      const canSend =
-        sub === "instruction" ||
-        (sub === "after_instruction" &&
-          !clarifyReceived &&
-          ba.lastInstructionAt != null &&
-          Date.now() >= ba.lastInstructionAt + INSTRUCTION_COOLDOWN_MS);
-      if (!canSend) return;
+      if (sub === "awaiting_answer") return;
 
       await pushMessages(
         [
@@ -454,21 +447,50 @@ export default function BlindArchitect({
     }
   };
 
-  const sendDrawerClarify = async (textRaw: string) => {
+  /** Drawer chat: only banned-word filtering — no question-mark or turn-gating beyond awaiting_answer. */
+  const sendDrawerMessage = async (textRaw: string) => {
     const text = textRaw.trim();
     if (!text) return;
-    if (chatSubphase !== "after_instruction" || clarifyReceived) return;
-    if (!text.includes("?")) {
+    if (chatSubphase === "awaiting_answer") return;
+
+    const bad = findObjectNameViolations(text);
+    if (bad.length > 0) {
+      const v = { ...ba.violations, [r]: (ba.violations[r] || 0) + 1 };
+      await pushMessages(
+        [
+          makeMessage({
+            fromRole: r,
+            seat: "drawer",
+            kind: "blocked_attempt",
+            text,
+            blockedWords: bad,
+          }),
+          makeMessage({
+            fromRole: r,
+            seat: "drawer",
+            kind: "system",
+            text: `Object name detected: "${bad.join('", "')}" — please rephrase using only shapes and directions.`,
+          }),
+        ],
+        { violations: v }
+      );
+      return;
+    }
+
+    if (chatSubphase === "instruction") {
       await pushMessages([
         makeMessage({
           fromRole: r,
           seat: "drawer",
-          kind: "system",
-          text: "Please ask one short clarifying question (include a question mark).",
+          kind: "clarify",
+          text,
         }),
       ]);
       return;
     }
+
+    if (chatSubphase !== "after_instruction") return;
+
     await pushMessages(
       [
         makeMessage({
@@ -577,10 +599,6 @@ export default function BlindArchitect({
 
   const chatTimeLeft = ba.roundTimerEndsAt ? Math.max(0, ba.roundTimerEndsAt - now) : 0;
   const studyTimeLeft = ba.studyEndsAt ? Math.max(0, ba.studyEndsAt - now) : 0;
-  const instructionCooldownSecsLeft =
-    ba.lastInstructionAt != null
-      ? Math.max(0, Math.ceil((ba.lastInstructionAt + INSTRUCTION_COOLDOWN_MS - now) / 1000))
-      : 0;
   const warnChat = ba.phase === "chat" && chatTimeLeft > 0 && chatTimeLeft <= 60_000;
   const fmt = (ms: number) => {
     const s = Math.ceil(ms / 1000);
@@ -589,23 +607,12 @@ export default function BlindArchitect({
   };
 
   const canSendInstruction =
-    isDescriber &&
-    ba.phase === "chat" &&
-    !ba.chatLocked &&
-    (chatSubphase === "instruction" ||
-      (chatSubphase === "after_instruction" &&
-        !clarifyReceived &&
-        ba.lastInstructionAt != null &&
-        Date.now() >= ba.lastInstructionAt + INSTRUCTION_COOLDOWN_MS));
+    isDescriber && ba.phase === "chat" && !ba.chatLocked && chatSubphase !== "awaiting_answer";
 
   const canSendAnswer = isDescriber && ba.phase === "chat" && !ba.chatLocked && chatSubphase === "awaiting_answer";
 
-  const canSendClarify =
-    !isDescriber &&
-    ba.phase === "chat" &&
-    !ba.chatLocked &&
-    chatSubphase === "after_instruction" &&
-    !clarifyReceived;
+  const canSendDrawerChat =
+    !isDescriber && ba.phase === "chat" && !ba.chatLocked && chatSubphase !== "awaiting_answer";
 
   const blueprintIdx = ba.blueprintIndex % 6;
 
@@ -620,10 +627,8 @@ export default function BlindArchitect({
             </p>
             <ul className="text-muted-foreground text-sm space-y-2 list-disc pl-5">
               <li>One instruction per message (describer).</li>
-              <li>Drawer may reply once per instruction with one clarifying question.</li>
-              <li>No object names — only shapes and positions (auto-checked).</li>
-              <li>No guessing aloud what the image “is.”</li>
-              <li>Describer waits for your clarifying reply or 15 seconds before the next instruction.</li>
+              <li>Drawer can chat anytime except while waiting for the describer's answer to a question.</li>
+              <li>Certain object-name words are blocked in chat for both of you — use shapes and positions instead.</li>
             </ul>
           </div>
           <button
@@ -692,7 +697,7 @@ export default function BlindArchitect({
       if (!t) return;
       if (canSendInstruction) await sendDescriberText("instruction", t);
       else if (canSendAnswer) await sendDescriberText("answer", t);
-      else if (canSendClarify) await sendDrawerClarify(t);
+      else if (canSendDrawerChat) await sendDrawerMessage(t);
       setDraft("");
     };
 
@@ -832,34 +837,28 @@ export default function BlindArchitect({
         <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 border-t border-primary/10 backdrop-blur max-w-2xl mx-auto">
           {isDescriber && (
             <p className="text-[11px] text-muted-foreground mb-1 text-center">
-              {canSendInstruction && "Send one instruction."}
-              {canSendAnswer && "Answer their clarifying question."}
-              {!canSendInstruction &&
-                !canSendAnswer &&
-                chatSubphase === "after_instruction" &&
-                !clarifyReceived && (
-                  <>
-                    Wait for their question or {instructionCooldownSecsLeft}s to send the next instruction.
-                  </>
-                )}
+              {canSendInstruction && "Send one instruction (no blocked object-name words)."}
+              {canSendAnswer && "Answer their message in one reply."}
               {!canSendInstruction && !canSendAnswer && chatSubphase === "awaiting_answer" && "They asked — answer in one message."}
             </p>
           )}
-          {!isDescriber && canSendClarify && (
-            <p className="text-[11px] text-muted-foreground mb-1 text-center">One clarifying question (must include ?).</p>
+          {!isDescriber && canSendDrawerChat && (
+            <p className="text-[11px] text-muted-foreground mb-1 text-center">
+              Chat is open — blocked words only. After an instruction, your message queues a reply from the describer.
+            </p>
           )}
           <div className="flex gap-2">
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={
-                isDescriber ? (canSendAnswer ? "Your answer…" : "Type your instruction…") : "Your clarifying question…"
+                isDescriber ? (canSendAnswer ? "Your answer…" : "Type your instruction…") : "Type your message…"
               }
               className="flex-1 rounded-2xl border border-primary/20 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-primary/20"
               disabled={
                 ba.chatLocked ||
                 (isDescriber && !canSendInstruction && !canSendAnswer) ||
-                (!isDescriber && !canSendClarify)
+                (!isDescriber && !canSendDrawerChat)
               }
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), onSubmit())}
             />
@@ -869,7 +868,7 @@ export default function BlindArchitect({
               disabled={
                 ba.chatLocked ||
                 (isDescriber && !canSendInstruction && !canSendAnswer) ||
-                (!isDescriber && !canSendClarify)
+                (!isDescriber && !canSendDrawerChat)
               }
               className="px-5 py-3 rounded-2xl bg-primary text-white font-bold text-sm"
             >
